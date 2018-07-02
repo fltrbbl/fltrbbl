@@ -24,7 +24,7 @@ class Feed:
         self.ensure_feed_in_db()
 
     def ensure_feed_in_db(self):
-        f = FeedModel.query(url=self.url).first()
+        f = FeedModel.query.filter_by(url=self.url).first()
         if not f:
             f = FeedModel(url=self.url)
             db.session.add(f)
