@@ -28,7 +28,7 @@ class Feed:
         if not f:
             f = FeedModel(url=self.url)
             db.session.add(f)
-            db.commit()
+            db.session.commit()
 
     def fetch(self):
         res = requests.get(self.url)
