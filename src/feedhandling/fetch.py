@@ -21,6 +21,8 @@ class Feed:
         self.fetch()
         self.set_empty_feed()
 
+        self.ensure_feed_in_db()
+
     def ensure_feed_in_db(self):
         f = FeedModel.query(url=self.url).first()
         if not f:
@@ -28,10 +30,9 @@ class Feed:
             db.session.add(f)
             db.commit()
 
-
     def fetch(self):
         res = requests.get(self.url)
-        logger.debug(res.text)
+        #logger.debug(res.text)
         self.xml = res.text
 
     def set_empty_feed(self):
