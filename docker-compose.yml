@@ -1,0 +1,42 @@
+version: "2"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  service:
+
+    build: .
+    volumes:
+    - ./:/var/task
+    - /tmp/.docker_py_cache:/root/.cache
+    - ~/.aws/:/root/.aws:ro
+
+    restart: ${RESTART}
+
+    # expose in docker network
+    expose:
+    - ${SERVICE_PORT}
+
+    # uplink port to host
+    ports:
+    - ${SERVICE_PORT}:${SERVICE_PORT}
+
+    env_file: .env
+
+    #command: bash -c "echo 'i did nothing!'"
+    command: >
+          bash -ic " \
+            pip install -r requirements.txt
+            flask run --host ${SERVICE_HOST} --port ${SERVICE_PORT}
+            "
+
+    tty: true
+
+volumes:
+  cache:
+  python_modules:
+  pgdata:
