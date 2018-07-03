@@ -2,14 +2,15 @@ import click
 
 from src import app
 from src import db
-
-
-@app.cli.command()
-def initdb():
-    """Initialize the database."""
-    db.create_all()
-
+from src.models import Article
 
 @app.cli.command()
 def fetch_feeds():
     pass
+
+
+@app.cli.command()
+def flush_feeds():
+    """Initialize the database."""
+    db.session.query(Article).delete()
+    db.session.commit()
