@@ -2,13 +2,11 @@ from sqlalchemy.orm import relationship
 
 from src import db
 
+from .user import User
+from .article import Article
 
-class Vote(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    like = db.Column(db.Boolean)
+class Vote(db.Document):
+    like = db.BooleanField()
 
-    article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
-    article = db.relationship("Article", backref=db.backref('likes', lazy=True))
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref=db.backref('likes', lazy=True))
+    article = db.ReferenceField(Article)
+    user = db.ReferenceField(User)

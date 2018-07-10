@@ -1,18 +1,19 @@
-version: "2"
+version: '3.1'
 
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
+  mongo:
+    image: mongo:3.6.5
+
+    restart: always
+
+    expose:
+    - 27017
   service:
 
     build: .
     volumes:
     - ./:/var/task
-    - /tmp/.docker_py_cache:/root/.cache
     - ~/.aws/:/root/.aws:ro
 
     restart: ${RESTART}
@@ -35,8 +36,3 @@ services:
             "
 
     tty: true
-
-volumes:
-  cache:
-  python_modules:
-  pgdata:
