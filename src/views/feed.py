@@ -2,30 +2,47 @@ from flask_restful import Resource
 
 from flask_login import login_required, current_user
 
-from src.models import User
+from src.models import Feed, User
 from flask import request, abort
 
 
-class UserView(Resource):
+class FeedView(Resource):
     method_decorators = {
         'get': [login_required],
         'post': [login_required]
     }
 
     def get(self):
-        return {'username': current_user.email, 'api_key': current_user.api_key}, 200
+        return [{'title': feed.title, 'url': feed.url} for feed in current_user.feeds], 200
 
     def put(self):
-        email = request.json.get('email')
-        password = request.json.get('password')
+        feed_url = request.json.get('url')
 
-        if email is None or password is None:
+        if feed_url is None:
             abort(400)  # missing arguments
-        if User.objects(email=email).first() is not None:
-            abort(400)  # existing user
 
-        user = User(email=email)
-        user.hash_password(password)
-        user.save()
+        feed = Feed.objects(url=feed_url).first()
+        if feed is None:
+            feed = Feed(url=feed_url)
+            feed.save()
 
-        return {'email': user.email, 'api_key': user.api_key}, 201
+        if feed not in current_user.feeds:
+            current_user.feeds.append(feed)
+            current_user.save()
+
+        return current_user.as_dict(), 201
+
+    def delete(self):
+        feed_url = request.json.get('url')
+
+        if feed_url is None:
+            abort(400)  # missing arguments
+
+        feed = Feed.objects(url=feed_url).first()
+        if feed is None:
+            abort(404) # feed not found
+
+        User.objects(id=current_user.id).update_one(pull__feeds=feed)
+
+        return User.objects(id=current_user.id).first().as_dict(), 201
+

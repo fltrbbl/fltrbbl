@@ -13,7 +13,7 @@ class UserView(Resource):
     }
 
     def get(self):
-        return {'username': current_user.email, 'api_key': current_user.api_key}, 200
+        return current_user.as_dict(), 200
 
     def put(self):
         email = request.json.get('email')
@@ -28,4 +28,4 @@ class UserView(Resource):
         user.hash_password(password)
         user.save()
 
-        return {'email': user.email, 'api_key': user.api_key}, 201
+        return user.as_dict(), 201

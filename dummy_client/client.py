@@ -84,5 +84,24 @@ def put(resource, json_dict=''):
     except (ValueError, json.decoder.JSONDecodeError):
         print('response %s: %s' % (response.status_code, response.text))
 
+@cli.command()
+@click.argument('resource')
+@click.option('--json', '-d', 'json_dict')
+def delete(resource, json_dict=''):
+    if json_dict:
+        d = resolve_json(json_dict)
+    else:
+        if not sys.stdin.isatty():
+            print('reading stdin...')
+            d = resolve_json(sys.stdin.read())
+        else:
+            print('no input found..?')
+            exit(1)
+    response = requests.delete(f'{HOST}/{resource}', json=d, auth=HTTPBasicAuth(auth['username'], auth['password']))
+    try:
+        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2)))
+    except (ValueError, json.decoder.JSONDecodeError):
+        print('response %s: %s' % (response.status_code, response.text))
+
 if __name__ == '__main__':
     cli()

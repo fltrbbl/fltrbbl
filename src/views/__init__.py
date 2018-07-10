@@ -5,11 +5,13 @@ import logging
 
 from .. import api
 from .user import UserView
+from .feed import FeedView
 
 logger = logging.getLogger(__name__)
 
 
 api.add_resource(UserView, '/user')
+api.add_resource(FeedView, '/feeds')
 
 """
 @app.route('/feed', methods=['GET', 'POST'])
