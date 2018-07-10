@@ -11,14 +11,16 @@ class User(db.Document):
     password_hash = db.StringField()
     api_key = db.StringField(default=secrets.token_hex(16))
 
-    feeds = db.ListField(db.ReferenceField(Feed, reverse_delete_rule=mongoengine.PULL))
+    #feeds = db.ListField(db.ReferenceField(Feed, reverse_delete_rule=mongoengine.PULL))
 
 
     def as_dict(self):
+        feeds = Feed.objects.filter(users__contains=self)
+
         return dict(
             email=self.email,
             api_key=self.api_key,
-            feeds=[{'url': feed.url, 'title': feed.title} for feed in self.feeds]
+            feeds=[{'url': feed.url, 'title': feed.title} for feed in feeds]
         )
 
     def hash_password(self, password):

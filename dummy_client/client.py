@@ -41,7 +41,7 @@ auth = dict(username="testemail@abc.de", password='testpassword')
 def get(resource):
     response = requests.get(f'{HOST}/{resource}', auth=HTTPBasicAuth(auth['username'], auth['password']))
     try:
-        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2)))
+        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2, ensure_ascii=False)))
     except (ValueError, json.decoder.JSONDecodeError):
         print('response %s: %s' % (response.status_code, response.text))
 
@@ -61,7 +61,7 @@ def post(resource, json_dict=''):
             exit(1)
     response = requests.post(f'{HOST}/{resource}', json=d, auth=HTTPBasicAuth(auth['username'], auth['password']))
     try:
-        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2)))
+        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2, ensure_ascii=False)))
     except (ValueError, json.decoder.JSONDecodeError):
         print('response %s: %s' % (response.status_code, response.text))
 
@@ -80,7 +80,7 @@ def put(resource, json_dict=''):
             exit(1)
     response = requests.put(f'{HOST}/{resource}', json=d, auth=HTTPBasicAuth(auth['username'], auth['password']))
     try:
-        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2)))
+        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2, ensure_ascii=False)))
     except (ValueError, json.decoder.JSONDecodeError):
         print('response %s: %s' % (response.status_code, response.text))
 
@@ -99,7 +99,7 @@ def delete(resource, json_dict=''):
             exit(1)
     response = requests.delete(f'{HOST}/{resource}', json=d, auth=HTTPBasicAuth(auth['username'], auth['password']))
     try:
-        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2)))
+        print('response %s: %s' % (response.status_code, json.dumps(response.json(), indent=2, ensure_ascii=False)))
     except (ValueError, json.decoder.JSONDecodeError):
         print('response %s: %s' % (response.status_code, response.text))
 

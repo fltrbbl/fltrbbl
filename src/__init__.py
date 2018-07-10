@@ -30,6 +30,8 @@ db.init_app(app)
 from .models import Article, Feed, User, Vote
 from .views import *
 
+from .cli import *
+
 
 @login_manager.request_loader
 def load_user_from_request(request):

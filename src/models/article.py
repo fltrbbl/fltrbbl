@@ -3,9 +3,9 @@ from src import db
 from .feed import Feed
 
 class Article(db.Document):
+    feed = db.ReferenceField(Feed, required=True)
+    source_id = db.StringField(required=True)
 
-    feed_url = db.ReferenceField(Feed, required=True)
-    source_id = db.StringField()
     url = db.StringField()
 
     text = db.StringField()
