@@ -16,7 +16,7 @@ class TriggerUpdateView(Resource):
     }
 
     def get(self):
-        Feed.objects.filter()
+        # todo: filter orphan feeds
 
         update_db()
         return {}, 200

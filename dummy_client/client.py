@@ -2,6 +2,7 @@ import click
 import json
 import sys
 import requests
+import os
 from requests.auth import HTTPBasicAuth
 
 HOST = 'http://localhost:8080'

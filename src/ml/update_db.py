@@ -16,7 +16,7 @@ def update_db():
     logger.info('updating %s feeds' % len(feeds))
     pool = ThreadPool(5)
 
-    pool.apply(update_feed, [feed.url for feed in feeds])
+    pool.apply_async(update_feed, [feed.url for feed in feeds])
     logger.info('queued!')
 
 
@@ -54,9 +54,28 @@ def update_feed(feed_url):
 
             article = Article(source_id=entry.id,
                               url=entry.link,
-                              feed=feed,
-                              text=newspaper_article.text,
-                              language=newspaper_article.meta_lang
+                              feed=feed
                               )
+
+            article.title = newspaper_article.title
+            article.top_image = newspaper_article.top_image
+
+            article.movies = newspaper_article.movies
+            article.keywords = newspaper_article.keywords
+            article.tags = list(newspaper_article.tags)
+
+            article.authors = newspaper_article.authors
+            article.publish_date = newspaper_article.publish_date
+
+            article.summary = newspaper_article.summary
+
+            meta_data = {key.replace('.', '_').replace('$', '__'): value for key, value in newspaper_article.summary}
+
+            article.meta_data = meta_data
+
+            article.language = newspaper_article.meta_lang
+            article.text = newspaper_article.text
+
             article.save()
+
     logger.info('done with %s' % feed_url)
