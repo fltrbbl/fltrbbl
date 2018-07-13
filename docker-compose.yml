@@ -9,12 +9,30 @@ services:
 
     expose:
     - 27017
+
+  service_cron:
+
+    build: .
+    volumes:
+    - ./crontabs:/var/spool/cron/crontabs
+
+    restart: ${RESTART}
+
+    # expose in docker network
+    expose:
+    - ${SERVICE_PORT}
+
+    env_file: .env
+
+    command: >
+          crond -l 2 -f
+
+
   service:
 
     build: .
     volumes:
     - ./:/var/task
-    - ~/.aws/:/root/.aws:ro
 
     restart: ${RESTART}
 

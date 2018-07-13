@@ -2,9 +2,12 @@
 from .. import app
 from src.models import User, Article, Feed, Vote
 
+from src.ml.update_db import update_db
+
+
 @app.cli.command()
 def fetch_feeds():
-    pass
+    update_db()
 
 
 @app.cli.command()
