@@ -4,53 +4,55 @@ services:
 
   mongo:
     image: mongo:3.6.5
-
     restart: always
-
     expose:
     - 27017
 
-  service_cron:
-
+  service_update_feeds:
     build: .
     volumes:
     - ./crontabs:/var/spool/cron/crontabs
-
-    restart: ${RESTART}
-
-    # expose in docker network
-    expose:
-    - ${SERVICE_PORT}
-
-    env_file: .env
-
-    command: >
-          crond -l 2 -f
-
-
-  service:
-
-    build: .
-    volumes:
     - ./:/var/task
 
     restart: ${RESTART}
 
-    # expose in docker network
-    expose:
-    - ${SERVICE_PORT}
-
-    # uplink port to host
-    ports:
-    - ${SERVICE_PORT}:${SERVICE_PORT}
-
     env_file: .env
 
-    #command: bash -c "echo 'i did nothing!'"
     command: >
-          bash -ic " \
-            pip install -r requirements.txt
-            flask run --host ${SERVICE_HOST} --port ${SERVICE_PORT}
-            "
+            bash -ic "
+              while true
+              do
+              flask fetch_feeds
+              sleep 10m
+              done
+              "
 
     tty: true
+
+  service:
+
+      build: .
+      volumes:
+      - ./:/var/task
+      - ~/.aws/:/root/.aws:ro
+
+      restart: ${RESTART}
+
+      # expose in docker network
+      expose:
+      - ${SERVICE_PORT}
+
+      # uplink port to host
+      ports:
+      - ${SERVICE_PORT}:${SERVICE_PORT}
+
+      env_file: .env
+
+      #command: bash -c "echo 'i did nothing!'"
+      command: >
+            bash -ic "
+              pip install -r requirements.txt
+              flask run --host ${SERVICE_HOST} --port ${SERVICE_PORT}
+              "
+
+      tty: true

@@ -15,7 +15,7 @@ class Article(db.Document):
     authors = db.ListField()
     publish_date = db.DateTimeField()
     summary = db.StringField()
-
+    html = db.StringField()
     meta_data = db.DictField()
 
     language = db.StringField()

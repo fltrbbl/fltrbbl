@@ -1,5 +1,7 @@
 import feedparser
 import logging
+import datetime
+
 from time import sleep
 from ..models import Article, Feed
 from .. import db
@@ -16,7 +18,7 @@ def update_db():
     logger.info('updating %s feeds' % len(feeds))
     pool = ThreadPool(5)
 
-    pool.apply_async(update_feed, [feed.url for feed in feeds])
+    pool.apply(update_feed, [feed.url for feed in feeds])
     logger.info('queued!')
 
 
@@ -40,15 +42,12 @@ def update_feed(feed_url):
     logger.debug('after title check')
 
     stored_article_source_ids = Article.objects.filter(feed=feed).all().values_list('source_id')
-    print(stored_article_source_ids)
 
     logger.debug('checking %s articles...' % len(parsed_feed.entries))
-    print(parsed_feed)
     for entry in parsed_feed.entries:
-        print(entry)
         if entry.id not in stored_article_source_ids:
             logger.debug('fetching article...')
-            newspaper_article = NewspaperArticle(entry.link)
+            newspaper_article = NewspaperArticle(entry.link, keep_article_html=True)
             newspaper_article.download()
             newspaper_article.parse()
 
@@ -65,7 +64,9 @@ def update_feed(feed_url):
             article.tags = list(newspaper_article.tags)
 
             article.authors = newspaper_article.authors
-            article.publish_date = newspaper_article.publish_date
+
+            if newspaper_article.publish_date:
+                article.publish_date = newspaper_article.publish_date.replace(tzinfo=datetime.timezone.utc)
 
             article.summary = newspaper_article.summary
 
@@ -74,7 +75,9 @@ def update_feed(feed_url):
             article.meta_data = meta_data
 
             article.language = newspaper_article.meta_lang
+
             article.text = newspaper_article.text
+            article.html = newspaper_article.article_html
 
             article.save()
 

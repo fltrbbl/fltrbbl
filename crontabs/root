@@ -1,0 +1,5 @@
+# do daily/weekly/monthly maintenance
+#min	hour	day	month	weekday	command
+*/2 * * * * echo date > /var/task/feedupdate.log
+
+#*/1	*	*	*	*	/var/task/env/bin/flask fetch_feeds > /var/task/feedupdate.log

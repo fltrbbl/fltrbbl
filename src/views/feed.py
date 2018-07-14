@@ -1,4 +1,7 @@
 import json
+import datetime
+import html
+from feedgen.feed import FeedGenerator
 
 from flask_restful import Resource
 
@@ -17,7 +20,7 @@ class FeedView(Resource):
     def get(self):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
         articles = Article.objects.filter(feed__in=feeds).all()
-        return json.loads(articles.to_json()), 200
+        return articles.to_json()
 
     def put(self):
         feed_url = request.json.get('url')
@@ -44,9 +47,8 @@ class FeedView(Resource):
 
         feed = Feed.objects(url=feed_url).first()
         if feed is None:
-            abort(404) # feed not found
+            abort(404)  # feed not found
 
         User.objects(id=current_user.id).update_one(pull__feeds=feed)
 
         return User.objects(id=current_user.id).first().as_dict(), 201
-
