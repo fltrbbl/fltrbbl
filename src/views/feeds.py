@@ -24,7 +24,7 @@ class FeedsView(Resource):
     }
 
     def get(self):
-        return [{'title': feed.title, 'url': feed.url} for feed in current_user.feeds], 200
+        return current_user.as_dict()['feeds'], 200
 
     def put(self):
         feed_url = request.json.get('url')
@@ -52,12 +52,14 @@ class FeedsView(Resource):
             feed.users.append(current_user.id)
             feed.save()
 
-        return User.objects(id=current_user.id).first().as_dict(), 201
+        return current_user.as_dict()['feeds'], 201
 
     def delete(self):
-        feed_url = request.json.get('url')
+        feed_url = request.json.get('url', False) if request.json else False
+        if not feed_url:
+            feed_url = request.args.get('url', False)
 
-        if feed_url is None:
+        if not feed_url:
             abort(400)  # missing arguments
 
         feed = Feed.objects(url=feed_url).first()
@@ -66,5 +68,5 @@ class FeedsView(Resource):
 
         Feed.objects(url=feed_url).update_one(pull__users=current_user.id)
 
-        return User.objects(id=current_user.id).first().as_dict(), 201
+        return current_user.as_dict()['feeds'], 201
 

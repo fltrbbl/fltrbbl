@@ -55,9 +55,11 @@ def load_user_from_request(request):
             return user
 
     elif request.headers.get('Authorization', False):
-        auth_header = request.headers['Authorization'].split('Token ', 1)
+        auth_header = request.headers['Authorization'].split('Token: ', 1)
         logger.debug('trying with token auth...')
+        print(auth_header)
         if len(auth_header) == 2:
+            logger.debug('finding user by token: %s ' % auth_header[1])
             user = User.verify_auth_token(auth_header[1])
             return user
 
