@@ -39,7 +39,6 @@ requests-file==1.4.3
 rsa==3.4.2
 s3transfer==0.1.13
 six==1.11.0
-SQLAlchemy==1.2.9
 tldextract==2.2.0
 urllib3==1.23
 virtualenv==15.2.0

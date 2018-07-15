@@ -18,7 +18,7 @@ def update_db():
     logger.info('updating %s feeds' % len(feeds))
     pool = ThreadPool(5)
 
-    pool.apply(update_feed, [feed.url for feed in feeds])
+    pool.map(update_feed, [feed.url for feed in feeds])
     logger.info('queued!')
 
 

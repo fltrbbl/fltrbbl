@@ -1,5 +1,3 @@
-from sqlalchemy.orm import relationship
-
 from src import db
 
 from .user import User

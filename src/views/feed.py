@@ -20,7 +20,7 @@ class FeedView(Resource):
     def get(self):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
         articles = Article.objects.filter(feed__in=feeds).all()
-        return articles.to_json()
+        return json.loads(articles.to_json())
 
     def put(self):
         feed_url = request.json.get('url')
