@@ -6,6 +6,7 @@ from flask import Flask, jsonify
 from flask_login import LoginManager
 from flask_mongoengine import MongoEngine
 from flask_restful import Api
+from flask_cors import CORS
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -20,6 +21,7 @@ app.config['MONGODB_SETTINGS'] = {
 }
 
 api = Api(app)
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -46,9 +48,17 @@ def load_user_from_request(request):
     auth = request.authorization
     logger.debug('auth: %s' % auth)
     if auth and auth.username and auth.password:
-        logger.debug('trying with basic auth...')
+        logger.debug('trying with basic auth... %s and %s' % (auth.username, auth.password))
         user = User.objects(email=auth.username).first()
-        if user.verify_password(auth.password):
+        if user and user.verify_password(auth.password):
+            logger.debug('found user!')
+            return user
+
+    elif request.headers.get('Authorization', False):
+        auth_header = request.headers['Authorization'].split('Token ', 1)
+        logger.debug('trying with token auth...')
+        if len(auth_header) == 2:
+            user = User.verify_auth_token(auth_header[1])
             return user
 
     # finally, return None if both methods did not login the user

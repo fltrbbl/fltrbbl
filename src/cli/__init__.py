@@ -21,6 +21,13 @@ def fetch_feeds():
 
 
 @app.cli.command()
+def clean_feeds():
+    """delete unused feeds"""
+    unused_feeds = Feed.objects(users=[])
+    print('deleting %s' % [f.url for f in unused_feeds])
+    unused_feeds.delete()
+
+@app.cli.command()
 def learn():
     logger.info('re-train doc2vec')
     vectorize()

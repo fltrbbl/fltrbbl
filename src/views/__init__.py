@@ -2,6 +2,7 @@ import logging
 
 from .. import api
 from .user import UserView
+from .user_token import TokenView
 from .feeds import FeedsView
 from .feed import FeedView
 from .feed_xml import AtomView, RssView
@@ -14,6 +15,7 @@ api.add_resource(AtomView, '/feed/atom')  # get your current feed
 
 
 api.add_resource(UserView, '/user')
+api.add_resource(TokenView, '/user/token')
 api.add_resource(FeedView, '/feed')  # get your current feed
 api.add_resource(FeedsView, '/feeds')  # manage feeds
 api.add_resource(TriggerUpdateView, '/trigger_update')  # trigger db update

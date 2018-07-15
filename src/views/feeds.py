@@ -1,9 +1,20 @@
+import requests
+
 from flask_restful import Resource
 
 from flask_login import login_required, current_user
 
 from src.models import Feed, User
 from flask import request, abort
+
+
+rss_and_atom_headers = [
+    'application/rss+xml'
+    'application/rss',
+    'application/atom+xml'
+    'application/atom'
+]
+
 
 
 class FeedsView(Resource):
@@ -23,6 +34,17 @@ class FeedsView(Resource):
 
         feed = Feed.objects(url=feed_url).first()
         if feed is None:
+            try:
+                res = requests.get(feed_url)
+            except requests.exceptions.ConnectionError as e:
+                return 'error fetching this feed: %s' % (e), 400
+
+            if not res.ok:
+                return 'feed returned %s: %s' % (res.status_code, res.content), 400
+
+            if not res.headers.get('Content-Type', False) not in rss_and_atom_headers:
+                return 'feed is not rss or atom: %s' % res.headers.get('Content-Type', False), 400
+
             feed = Feed(url=feed_url)
             feed.save()
 

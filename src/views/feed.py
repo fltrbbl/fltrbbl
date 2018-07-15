@@ -1,6 +1,7 @@
 import json
 import datetime
 import html
+import requests
 from feedgen.feed import FeedGenerator
 
 from flask_restful import Resource
