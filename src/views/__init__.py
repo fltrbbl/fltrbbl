@@ -7,6 +7,7 @@ from .feeds import FeedsView
 from .feed import FeedView
 from .feed_xml import AtomView, RssView
 from .trigger_update import TriggerUpdateView
+from .vectors import VectorsView
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ api.add_resource(UserView, '/user')
 api.add_resource(TokenView, '/user/token')
 api.add_resource(FeedView, '/feed')  # get your current feed
 api.add_resource(FeedsView, '/feeds')  # manage feeds
+api.add_resource(VectorsView, '/vectors')
 api.add_resource(TriggerUpdateView, '/trigger_update')  # trigger db update
 
 
