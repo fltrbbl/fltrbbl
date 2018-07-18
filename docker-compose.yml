@@ -20,6 +20,7 @@ services:
 
     command: >
             bash -ic "
+              ./wait-for-it.sh service:${SERVICE_PORT}
               while true
               do
               flask fetch_feeds
