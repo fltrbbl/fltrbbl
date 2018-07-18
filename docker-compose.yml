@@ -20,7 +20,8 @@ services:
 
     command: >
             bash -ic "
-              ./wait-for-it.sh service:${SERVICE_PORT}
+              /var/task/wait-for-it.sh mongo:27017;
+              bash ./wait-for-it.sh service:${SERVICE_PORT}
               while true
               do
               flask fetch_feeds
@@ -53,6 +54,7 @@ services:
       command: >
             bash -ic "
               pip install -r requirements.txt
+              /var/task/wait-for-it.sh mongo:27017;
               flask run --host ${SERVICE_HOST} --port ${SERVICE_PORT}
               "
 

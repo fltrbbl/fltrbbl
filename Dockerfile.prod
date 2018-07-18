@@ -1,0 +1,8 @@
+FROM janh/alpine-ml-python3.6
+
+COPY . /var/task/
+
+WORKDIR /var/task
+
+RUN pip install -r requirements.txt
+

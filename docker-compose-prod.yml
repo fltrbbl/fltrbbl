@@ -1,0 +1,54 @@
+version: '3.1'
+
+# WIP
+# still needs needs a combination of nginx + gunicorn
+
+services:
+
+  mongo:
+    image: mongo:3.6.5
+    restart: always
+    expose:
+    - 27017
+
+  service_update_feeds:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: fltrbbl
+    restart: always
+
+    command: >
+            bash -ic "
+              /var/task/wait-for-it.sh mongo:27017;
+              while true
+              do
+              flask fetch_feeds
+              sleep 10m
+              done
+              "
+
+    environment:
+        FLASK_APP: src:app
+
+    tty: true
+
+  service:
+      build:
+        context: .
+        dockerfile: Dockerfile.prod
+      image: fltrbbl
+
+      restart: always
+
+      # uplink port to host
+      ports:
+      - 8080:8080
+
+      #command: bash -c "echo 'i did nothing!'"
+      command: flask run --host 0.0.0.0 --port 8080
+
+      environment:
+        FLASK_APP: src:app
+
+      tty: true
