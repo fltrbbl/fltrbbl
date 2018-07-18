@@ -22,8 +22,8 @@ class VectorsView(Resource):
         from nltk.tokenize import word_tokenize
         from gensim.models.doc2vec import Doc2Vec
 
-        # doc2vec = vectorize()
-        model = Doc2Vec.load('d2v.model')
+        model = vectorize()
+        #model = Doc2Vec.load('d2v.model')
 
         keys = list(model.docvecs.doctags.keys())
 
