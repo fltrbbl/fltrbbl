@@ -11,6 +11,12 @@ class D2VModel(db.Document):
 
     vectors = db.DictField()
 
+    # [
+    #   [a1, a2],
+    #   [b1, b2]
+    # ]
+    vectors_2d = db.ListField(db.ListField(db.FloatField()))
+
     @property
     def model(self):
         """

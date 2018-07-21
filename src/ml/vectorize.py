@@ -6,6 +6,16 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 from typing import List
 
+import matplotlib
+
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
+
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+from src.models import Article, Feed
+from nltk.tokenize import word_tokenize
+from gensim.models.doc2vec import Doc2Vec
 
 def vectorize():
     nltk.download('punkt')
@@ -28,7 +38,25 @@ def vectorize():
 
     model.train(tagged_data, total_examples=model.corpus_count, epochs=model.epochs)
 
+    vectors_2d = build_2d_vecs(model)
+
     db_model = D2VModel.get()
     db_model.model = model
+    db_model.vectors_2d = vectors_2d
     db_model.save()
-    return model
+    return model, vectors_2d
+
+
+def build_2d_vecs(model):
+    vectors = model.docvecs.vectors_docs
+
+    pca = PCA(n_components=50)
+
+    fiftyDimVecs = pca.fit_transform(vectors)
+    tsne = TSNE(n_components=2)
+
+    two_dim_vectors = tsne.fit_transform(fiftyDimVecs)
+
+    serializable_two_dim_vectors = [vec.tolist() for vec in two_dim_vectors]
+
+    return serializable_two_dim_vectors
