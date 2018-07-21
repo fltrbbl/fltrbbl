@@ -1,18 +1,11 @@
-import json
-import datetime
-import html
-import requests
-from feedgen.feed import FeedGenerator
-
-from flask_restful import reqparse
-
-
 from flask_restful import Resource
 
 from flask_login import login_required, current_user
 
 from src.models import Feed, User, Article
 from flask import request, abort
+from webargs import fields
+from webargs.flaskparser import use_kwargs
 
 
 class FeedView(Resource):
@@ -20,14 +13,25 @@ class FeedView(Resource):
         'get': [login_required],
         'post': [login_required]
     }
-    parser = reqparse.RequestParser()
+    # https://stackoverflow.com/a/38480524
 
-    def get(self):
-        page = int(request.args.get('page', 1))
+    get_args = {
+        'page': fields.Int(
+            required=False,
+            missing=1,
+        ),
+    }
+
+    @use_kwargs(get_args)
+    def get(self, page):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
 
         # paginate returns .items
-        articles = Article.objects.filter(feed__in=feeds, active=True).paginate(page=page, per_page=10)
+
+        query = Article.objects.filter(feed__in=feeds, active=True)
+
+        articles = query.paginate(page=page, per_page=10)
+
         return [article.as_dict() for article in articles.items]
 
     def put(self):
