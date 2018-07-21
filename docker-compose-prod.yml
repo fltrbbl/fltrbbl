@@ -12,15 +12,12 @@ services:
     - 27017
 
   service_update_feeds:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    image: fltrbbl
+    image: janh/fltrbbl
     restart: always
 
     command: >
             bash -ic "
-              /var/task/wait-for-it.sh mongo:27017;
+              /var/task/wait-for-it.sh --timeout=0 mongo:27017;
               while true
               do
               flask fetch_feeds
@@ -34,10 +31,7 @@ services:
     tty: true
 
   service:
-      build:
-        context: .
-        dockerfile: Dockerfile.prod
-      image: fltrbbl
+      image: janh/fltrbbl
 
       restart: always
 
@@ -45,10 +39,6 @@ services:
       ports:
       - 8080:8080
 
-      #command: bash -c "echo 'i did nothing!'"
-      command: flask run --host 0.0.0.0 --port 8080
-
-      environment:
-        FLASK_APP: src:app
+      command: FLASK_APP: gunicorn -w 4 --bind=0.0.0.0:8080 src:app
 
       tty: true
