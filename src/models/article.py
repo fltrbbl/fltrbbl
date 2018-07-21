@@ -21,3 +21,23 @@ class Article(db.Document):
     language = db.StringField()
 
     text = db.StringField()
+    active = db.BooleanField(default=True)
+
+    def as_dict(self):
+        return dict(
+            feed=self.feed.url,
+            source_id=self.source_id,
+            url=self.url,
+            title=self.title,
+            top_image=self.top_image,
+            movies=self.movies,
+            keywords=self.keywords,
+            tags=self.tags,
+            authors=self.authors,
+            publish_date='%s' % self.publish_date,
+            summary=self.summary,
+            html=self.html,
+            meta_data=self.meta_data,
+            language=self.language,
+            text=self.text,
+        )

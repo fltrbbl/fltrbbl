@@ -6,6 +6,8 @@ from time import sleep
 from ..models import Article, Feed
 from .. import db
 from newspaper import Article as NewspaperArticle
+from newspaper.article import ArticleDownloadState
+import newspaper
 
 from multiprocessing.pool import ThreadPool
 
@@ -41,7 +43,12 @@ def update_feed(feed_url):
 
     logger.debug('after title check')
 
-    stored_article_source_ids = Article.objects.filter(feed=feed).all().values_list('source_id')
+    stored_article_source_ids = Article.objects.filter(feed=feed).only('source_id').all().values_list('source_id')
+
+    entry_ids = [entry.id for entry in parsed_feed.entries]
+
+    # set articles not served by the source to inactive
+    Article.objects.filter(active=True, source_id__nin=entry_ids).update(active=False)
 
     logger.debug('checking %s articles...' % len(parsed_feed.entries))
     for entry in parsed_feed.entries:
@@ -49,11 +56,16 @@ def update_feed(feed_url):
             logger.debug('fetching article...')
             newspaper_article = NewspaperArticle(entry.link, keep_article_html=True)
             newspaper_article.download()
+            if not newspaper_article.download_state == ArticleDownloadState.SUCCESS:
+                # download failed - just skip
+                continue
+
             newspaper_article.parse()
 
             article = Article(source_id=entry.id,
                               url=entry.link,
-                              feed=feed
+                              feed=feed,
+                              active=True
                               )
 
             article.title = newspaper_article.title

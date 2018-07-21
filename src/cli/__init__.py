@@ -2,7 +2,7 @@ import logging
 import mongoengine
 
 from .. import app
-from src.models import User, Article, Feed, Vote
+from src.models import User, Article, Feed, Vote, D2VModel
 
 from src.ml.update_db import update_db
 from src.ml.vectorize import vectorize
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def fetch_feeds():
     logger.info('starting updatedb')
     update_db()
-    logger.info('starting updatedb')
+    logger.info('done with updatedb')
     logger.info('re-learning...')
     vectorize()
 
@@ -56,6 +56,10 @@ def flush_db():
 @app.cli.command()
 def flush_articles():
     Article.objects.all().delete()
+
+@app.cli.command()
+def flush_d2vmodel():
+    D2VModel.objects.all().delete()
 
 
 @app.cli.command()

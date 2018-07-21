@@ -4,6 +4,9 @@ import html
 import requests
 from feedgen.feed import FeedGenerator
 
+from flask_restful import reqparse
+
+
 from flask_restful import Resource
 
 from flask_login import login_required, current_user
@@ -17,11 +20,15 @@ class FeedView(Resource):
         'get': [login_required],
         'post': [login_required]
     }
+    parser = reqparse.RequestParser()
 
     def get(self):
+        page = int(request.args.get('page', 1))
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
-        articles = Article.objects.filter(feed__in=feeds).all()
-        return json.loads(articles.to_json())
+
+        # paginate returns .items
+        articles = Article.objects.filter(feed__in=feeds, active=True).paginate(page=page, per_page=10)
+        return [article.as_dict() for article in articles.items]
 
     def put(self):
         feed_url = request.json.get('url')
