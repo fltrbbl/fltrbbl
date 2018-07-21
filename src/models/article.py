@@ -1,3 +1,5 @@
+from pymongo import UpdateOne
+
 from src import db
 from .feed import Feed
 
@@ -23,6 +25,8 @@ class Article(db.Document):
     text = db.StringField()
     active = db.BooleanField(default=True)
 
+    vector = db.ListField(db.FloatField())
+
     def as_dict(self):
         return dict(
             feed=self.feed.url,
@@ -40,4 +44,21 @@ class Article(db.Document):
             meta_data=self.meta_data,
             language=self.language,
             text=self.text,
+            vector=self.vector
         )
+
+    @staticmethod
+    def update_vectors(model):
+        # https://stackoverflow.com/questions/30943076/mongoengine-bulk-update-without-objects-update
+        bulk_operations = []
+
+        keys = model.docvecs.doctags.keys()
+        vectors = model.docvecs.vectors_docs
+
+        for key, vector in zip(keys, vectors):
+            bulk_operations.append(
+                UpdateOne({'_id': key}, {'$set': dict(vector=vector.tolist())}))
+
+        if bulk_operations:
+            collection = Article._get_collection() \
+                .bulk_write(bulk_operations, ordered=False)

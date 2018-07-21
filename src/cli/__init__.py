@@ -21,7 +21,8 @@ def fetch_feeds():
     update_db()
     logger.info('done with updatedb')
     logger.info('re-learning...')
-    vectorize()
+    model = vectorize()
+    Article.update_vectors(model)
 
 
 @app.cli.command()

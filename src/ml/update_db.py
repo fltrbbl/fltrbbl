@@ -29,7 +29,6 @@ def update_feed(feed_url):
     parsed_feed = feedparser.parse(feed_url)
     logger.debug('got parsed feed: %s articles' % len(parsed_feed))
     feed = Feed.objects.filter(url=feed_url).first()
-    logger.debug('found %s' % feed)
 
     if feed.title is None:
         try:
@@ -41,14 +40,17 @@ def update_feed(feed_url):
         except Exception as e:
             logger.error(e)
 
-    logger.debug('after title check')
-
     stored_article_source_ids = Article.objects.filter(feed=feed).only('source_id').all().values_list('source_id')
 
     entry_ids = [entry.id for entry in parsed_feed.entries]
 
     # set articles not served by the source to inactive
-    Article.objects.filter(active=True, source_id__nin=entry_ids).update(active=False)
+    Article.objects(active=True, source_id__nin=entry_ids, feed=feed).update(active=False)
+
+    # set articles served by the source to active
+    #Article.objects(source_id__in=entry_ids, feed=feed).update(active=True)
+
+    logger.info('%s active, %s in active articles in %s' % (Article.objects(active=True).count(), Article.objects(active=False).count(), feed_url))
 
     logger.debug('checking %s articles...' % len(parsed_feed.entries))
     for entry in parsed_feed.entries:
