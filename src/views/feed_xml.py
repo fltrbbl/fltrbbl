@@ -62,8 +62,10 @@ class RssView(Resource):
 
     def get(self):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
-        articles = Article.objects.filter(feed__in=feeds).all()
+        # paginate returns .items
+        articles = Article.objects.filter(feed__in=feeds, active=True)
         return articles
+
 
 
 def make_atom_response(feed, code, headers=None):
@@ -85,5 +87,6 @@ class AtomView(Resource):
 
     def get(self):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
-        articles = Article.objects.filter(feed__in=feeds).all()
+        # paginate returns .items
+        articles = Article.objects.filter(feed__in=feeds, active=True)
         return articles
