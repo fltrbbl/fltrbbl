@@ -1,8 +1,5 @@
 version: '3.1'
 
-# WIP
-# still needs needs a combination of nginx + gunicorn
-
 services:
 
   mongo:
@@ -40,5 +37,3 @@ services:
       - 8080:8080
 
       command: FLASK_APP: gunicorn -w 4 --bind=0.0.0.0:8080 src:app
-
-      tty: true

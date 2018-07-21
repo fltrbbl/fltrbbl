@@ -1,5 +1,4 @@
 import secrets
-import mongoengine
 
 from passlib.apps import custom_app_context as pwd_context
 from src import db, app
@@ -12,8 +11,6 @@ class User(db.Document):
     email = db.StringField(required=True)
     password_hash = db.StringField()
     api_key = db.StringField(default=secrets.token_hex(16))
-
-    #feeds = db.ListField(db.ReferenceField(Feed, reverse_delete_rule=mongoengine.PULL))
 
 
     def as_dict(self):

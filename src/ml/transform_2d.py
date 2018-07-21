@@ -6,13 +6,14 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from src.models import Article, Feed, D2VModel
 from nltk.tokenize import word_tokenize
-from gensim.models.doc2vec import Doc2Vec
 
 
 import nltk
-nltk.download('punkt')
+
 
 def update_plotable():
+    nltk.download('punkt')
+
     db_model = D2VModel.get()
     model = db_model.model
 

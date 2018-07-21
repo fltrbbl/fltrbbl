@@ -1,6 +1,4 @@
 import logging
-import os
-import base64
 
 from flask import Flask, jsonify
 from flask_login import LoginManager
@@ -10,6 +8,9 @@ from flask_cors import CORS
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+matplotlib_logger = logging.getLogger('matplotlib')
+matplotlib_logger.setLevel(logging.WARNING)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'skjdvnakjfdnakdsvzuewqoiufed'
@@ -46,21 +47,19 @@ def load_user_from_request(request):
 
     # next, try to login using Basic Auth
     auth = request.authorization
-    logger.debug('auth: %s' % auth)
     if auth and auth.username and auth.password:
-        logger.debug('trying with basic auth... %s and %s' % (auth.username, auth.password))
+        logger.debug('trying basic auth...')
         user = User.objects(email=auth.username).first()
         if user and user.verify_password(auth.password):
-            logger.debug('found user!')
+            logger.debug('found user %s!' % user.email)
             return user
 
     elif request.headers.get('Authorization', False):
-        auth_header = request.headers['Authorization'].split('Token: ', 1)
         logger.debug('trying with token auth...')
-        print(auth_header)
+        auth_header = request.headers['Authorization'].split('Token: ', 1)
         if len(auth_header) == 2:
-            logger.debug('finding user by token: %s ' % auth_header[1])
             user = User.verify_auth_token(auth_header[1])
+            logger.debug('found user %s!' % user.email)
             return user
 
     # finally, return None if both methods did not login the user

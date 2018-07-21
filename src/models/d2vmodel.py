@@ -2,8 +2,6 @@ import io
 import datetime
 import pickle
 
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-
 from src import db
 
 
