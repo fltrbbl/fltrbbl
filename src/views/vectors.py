@@ -27,7 +27,7 @@ class VectorsView(Resource):
     }
 
     def get(self):
-        articles = Article.objects(active=True).only(
+        articles = Article.objects.only(
             'feed', 'url', 'title', 'vector', 'publish_date', 'vector_2d')
         article_schema = ArticleVectorSchema()
 
