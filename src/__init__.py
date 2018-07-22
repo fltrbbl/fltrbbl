@@ -60,8 +60,9 @@ def load_user_from_request(request):
         auth_header = request.headers['Authorization'].split('Token: ', 1)
         if len(auth_header) == 2:
             user = User.verify_auth_token(auth_header[1])
-            logger.debug('found user %s!' % user.email)
-            return user
+            if user:
+                logger.debug('found user %s!' % user.email)
+                return user
 
     # finally, return None if both methods did not login the user
     return None

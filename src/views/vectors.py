@@ -6,9 +6,12 @@ from src.models import Article
 
 from marshmallow import Schema, fields
 
+class FeedSchema(Schema):
+    id = fields.Str()
 
 class ArticleVectorSchema(Schema):
-    feed_url = fields.Str()
+    feed = fields.Nested(FeedSchema)
+
     url = fields.Str()
     title = fields.Str()
     vector = fields.List(fields.Float())
