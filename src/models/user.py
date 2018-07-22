@@ -19,7 +19,7 @@ class User(db.Document):
         return dict(
             email=self.email,
             api_key=self.api_key,
-            feeds=[{'url': feed.url, 'title': feed.title} for feed in feeds]
+            feeds=[{'url': feed.url, 'title': feed.title, 'id': str(feed.id)} for feed in feeds]
         )
 
     def hash_password(self, password):
