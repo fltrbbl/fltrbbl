@@ -6,7 +6,7 @@ from src import db
 
 
 class D2VModel(db.Document):
-    serialized_model = db.BinaryField()
+    serialized_model = db.FileField()
     last_run = db.DateTimeField()
 
     vectors = db.DictField()

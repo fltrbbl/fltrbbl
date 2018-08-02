@@ -20,17 +20,20 @@ class FeedView(Resource):
             required=False,
             missing=1,
         ),
+        'pagesize': fields.Int(
+            required=False,
+            missing=10,
+        )
     }
 
     @use_kwargs(get_args)
-    def get(self, page):
+    def get(self, page, pagesize):
         feeds = Feed.objects.filter(users__contains=current_user.id).all()
-
         # paginate returns .items
 
-        query = Article.objects.filter(feed__in=feeds, active=True)
+        query = Article.objects.filter(feed__in=feeds).order_by('-publish_date')
 
-        articles = query.paginate(page=page, per_page=10)
+        articles = query.paginate(page=page, per_page=pagesize)
 
         return [article.as_dict() for article in articles.items]
 
