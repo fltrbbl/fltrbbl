@@ -18,7 +18,7 @@ feedfinder2==0.0.4
 feedgen==0.7.0
 feedparser==5.2.1
 Flask==1.0.2
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
 Flask-Login==0.4.1
 flask-mongoengine==0.9.5
 Flask-RESTful==0.3.6
