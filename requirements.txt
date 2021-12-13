@@ -34,7 +34,7 @@ jieba3k==0.35.1
 Jinja2==2.10
 jmespath==0.9.3
 kiwisolver==1.0.1
-lxml==4.2.3
+lxml==4.6.5
 MarkupSafe==1.0
 marshmallow==2.15.3
 matplotlib==2.2.2
